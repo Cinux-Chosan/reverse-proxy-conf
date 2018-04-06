@@ -33,7 +33,9 @@ https.createServer(httpsOptions, (req, res) => {
         proxy.web(req, res, { target: 'https://localhost:3000' });  // 3000 用作博客端口
     }
 
-}).listen(443)
+}).listen(443, () => {
+    console.log('443端口启动成功！')
+})
 
 
 // 负责将 http 请求重定向到 https
@@ -41,4 +43,6 @@ http.createServer((req, res) => {
     let redirectUrl = new URL(req.url, `https://${req.headers.host}`);
     res.writeHead(301, { 'Location': redirectUrl.toString() });
     res.end();
-}).listen(80);
+}).listen(80, () => {
+    console.log('重定向80端口启动成功！')
+});
