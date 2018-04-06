@@ -1,0 +1,22 @@
+{
+  "name": "reverse-proxy-conf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cinux-Chosan/reverse-proxy-conf.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cinux-Chosan/reverse-proxy-conf/issues"
+  },
+  "homepage": "https://github.com/Cinux-Chosan/reverse-proxy-conf#readme",
+  "dependencies": {
+    "http-proxy": "^1.16.2"
+  }
+}
