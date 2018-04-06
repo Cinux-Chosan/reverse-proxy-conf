@@ -24,17 +24,20 @@ let httpsOptions = {
 let proxy = httpProxy.createProxyServer(proxyOptions);
 
 https.createServer(httpsOptions, (req, res) => {
+    let host = req.headers.host;
     let url = req.url;
 
-    console.log('https', req.headers.host, req.url);
-
-    if (url.startsWith('/wxapi')) {
-        proxy.web(req, res, { target: 'https://localhost:9000' });  // 9000 用作 wxapi 端口
-    } 
-    if (url.startsWith('/api')) {
-        proxy.web(req, res, { target: 'https://localhost:3000' });  // 3000 用作博客端口
+    console.log('https request\n', host, url);
+    
+    switch (host) {
+        case 'wx.chosan.cn':
+            proxy.web(req, res, { target: 'http://localhost:9000' });  // 9000 用作 wxapi 端口
+        break;
+        case 'chosan.cn':
+            proxy.web(req, res, { target: 'https://localhost:3000' });  // 3000 用作博客端口
+        default:
+            break;
     }
-
 }).listen(443, () => {
     console.log('443端口启动成功！')
 })
@@ -42,8 +45,10 @@ https.createServer(httpsOptions, (req, res) => {
 
 // 负责将 http 请求重定向到 https
 http.createServer((req, res) => { 
-    console.log('http', req.headers.host, req.url);
-    let redirectUrl = new URL(req.url, `https://${req.headers.host}`);
+    let host = req.headers.host;
+    let url = req.url;
+    console.log('http request\n', host, url);
+    let redirectUrl = new URL(url, `https://${ host}`);
     res.writeHead(301, { 'Location': redirectUrl.toString() });
     res.end();
 }).listen(80, () => {
