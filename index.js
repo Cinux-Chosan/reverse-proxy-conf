@@ -28,10 +28,13 @@ https.createServer(httpsOptions, (req, res) => {
     let url = req.url;
 
     console.log('https request\n', host, url);
-    
+
     switch (host) {
         case 'wx.chosan.cn':
             proxy.web(req, res, { target: 'http://localhost:9000' });  // 9000 用作 wxapi 端口
+        break;
+        case 'mobile.chosan.cn':
+            proxy.web(req, res, { target: 'http:// localhost: 9001'});  // 9001 用作测试 app-mobile
         break;
         case 'chosan.cn':
             proxy.web(req, res, { target: 'https://localhost:3000' });  // 3000 用作博客端口
@@ -44,7 +47,7 @@ https.createServer(httpsOptions, (req, res) => {
 
 
 // 负责将 http 请求重定向到 https
-http.createServer((req, res) => { 
+http.createServer((req, res) => {
     let host = req.headers.host;
     let url = req.url;
     console.log('http request\n', host, url);
