@@ -5,6 +5,8 @@ const fs = require('fs');
 
 let { URL } = require('url');
 
+let util = require('util');
+
 let  cert = fs.readFileSync('/etc/letsencrypt/live/www.chosan.cn/fullchain.pem'),
 key = fs.readFileSync('/etc/letsencrypt/live/www.chosan.cn/privkey.pem')
 
@@ -52,6 +54,7 @@ http.createServer((req, res) => {
     let url = req.url;
     console.log('http request\n', host, url);
     let redirectUrl = new URL(url, `https://${ host}`);
+    req.headers.origin && res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
     res.writeHead(301, { 'Location': redirectUrl.toString() });
     res.end();
 }).listen(80, () => {
