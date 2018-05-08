@@ -34,6 +34,7 @@ https.createServer(httpsOptions, (req, res) => {
             proxy.web(req, res, { target: 'http://localhost:9000' });  // 9000 用作 wxapi 端口
         break;
         case 'chosan.cn':
+        case 'www.chosan.cn':
             proxy.web(req, res, { target: 'https://localhost:3000' });  // 3000 用作博客端口
         default:
             break;
