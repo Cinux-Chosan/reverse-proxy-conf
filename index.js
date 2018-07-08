@@ -23,7 +23,8 @@ let httpsOptions = {
     key
 }
 
-let proxy = httpProxy.createProxyServer(proxyOptions);
+let proxy = httpProxy.createProxyServer({});
+let httpsProxy = httpProxy.createProxyServer(proxyOptions);
 
 https.createServer(httpsOptions, (req, res) => {
     let host = req.headers.host;
@@ -33,14 +34,14 @@ https.createServer(httpsOptions, (req, res) => {
 
     switch (host) {
         case 'wx.chosan.cn':
-            proxy.web(req, res, { target: 'http://localhost:9000' });  // 9000 用作 wxapi 端口
+            httpsProxy.web(req, res, { target: 'http://localhost:9000' });  // 9000 用作 wxapi 端口
         break;
         case 'mobile.chosan.cn':
-            proxy.web(req, res, { target: 'http:// localhost:9001'});  // 9001 用作测试 app-mobile
+            httpsProxy.web(req, res, { target: 'http:// localhost:9001'});  // 9001 用作测试 app-mobile
         break;
         case 'chosan.cn':
         case 'www.chosan.cn':
-            proxy.web(req, res, { target: 'https://localhost:3000' });  // 3000 用作博客端口
+            httpsProxy.web(req, res, { target: 'https://localhost:3000' });  // 3000 用作博客端口
         default:
             break;
     }
@@ -48,16 +49,26 @@ https.createServer(httpsOptions, (req, res) => {
     console.log('443端口启动成功！')
 })
 
+proxyMap = new Map();
+proxyMap.set('ysd.kim', 'http://www.atool.org')
+proxyMap.set('mln.fun', 'http://www.atool.org')
+proxyMap.set('mlo.fun', 'http://www.atool.org')
+proxyMap.set('mln.kim', 'http://www.atool.org')
 
 // 负责将 http 请求重定向到 https
 http.createServer((req, res) => {
     let host = req.headers.host;
     let url = req.url;
     console.log('http request\n', host, url);
-    let redirectUrl = new URL(url, `https://${ host}`);
-    req.headers.origin && res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-    res.writeHead(301, { 'Location': redirectUrl.toString() });
-    res.end();
+    let key = '';
+    if (key = [...proxyMap.keys()].find(el => host.includes(el))) {
+        proxy.web(req, res, { target: proxyMap.get(key) });
+    } else {
+        let redirectUrl = new URL(url, `https://${ host}`);
+        req.headers.origin && res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+        res.writeHead(301, { 'Location': redirectUrl.toString() });
+        res.end();
+    }
 }).listen(80, () => {
     console.log('重定向80端口启动成功！')
 });
