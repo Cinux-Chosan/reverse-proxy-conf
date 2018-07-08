@@ -62,7 +62,9 @@ http.createServer((req, res) => {
     console.log('http request\n', host, url);
     let key = '';
     if (key = [...proxyMap.keys()].find(el => host.includes(el))) {
-        proxy.web(req, res, { target: proxyMap.get(key) });
+        let target = proxyMap.get(key);
+        console.log(`重定向到\t${target}`);
+        proxy.web(req, res, { target });
     } else {
         let redirectUrl = new URL(url, `https://${ host}`);
         req.headers.origin && res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
