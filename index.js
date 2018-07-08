@@ -7,52 +7,52 @@ let { URL } = require('url');
 
 let util = require('util');
 
-// let  cert = fs.readFileSync('/etc/letsencrypt/live/www.chosan.cn/fullchain.pem'),
-// key = fs.readFileSync('/etc/letsencrypt/live/www.chosan.cn/privkey.pem')
+let  cert = fs.readFileSync('/etc/letsencrypt/live/www.chosan.cn/fullchain.pem'),
+key = fs.readFileSync('/etc/letsencrypt/live/www.chosan.cn/privkey.pem')
 
-// let proxyOptions = {
-//     ssl: {
-//         cert,
-//         key
-//     },
-//     secure: true
-// }
+let proxyOptions = {
+    ssl: {
+        cert,
+        key
+    },
+    secure: true
+}
 
-// let httpsOptions = {
-//     cert,
-//     key
-// }
+let httpsOptions = {
+    cert,
+    key
+}
 
 let proxy = httpProxy.createProxyServer({});
-// let httpsProxy = httpProxy.createProxyServer(proxyOptions);
+let httpsProxy = httpProxy.createProxyServer(proxyOptions);
 
-// https.createServer(httpsOptions, (req, res) => {
-//     let host = req.headers.host;
-//     let url = req.url;
+https.createServer(httpsOptions, (req, res) => {
+    let host = req.headers.host;
+    let url = req.url;
 
-//     console.log('https request\n', host, url);
+    console.log('https request\n', host, url);
 
-//     switch (host) {
-//         case 'wx.chosan.cn':
-//             httpsProxy.web(req, res, { target: 'http://localhost:9000' });  // 9000 用作 wxapi 端口
-//         break;
-//         case 'mobile.chosan.cn':
-//             httpsProxy.web(req, res, { target: 'http:// localhost:9001'});  // 9001 用作测试 app-mobile
-//         break;
-//         case 'chosan.cn':
-//         case 'www.chosan.cn':
-//             httpsProxy.web(req, res, { target: 'https://localhost:3000' });  // 3000 用作博客端口
-//         default:
-//             break;
-//     }
-// }).listen(443, () => {
-//     console.log('443端口启动成功！')
-// })
+    switch (host) {
+        case 'wx.chosan.cn':
+            httpsProxy.web(req, res, { target: 'http://localhost:9000' });  // 9000 用作 wxapi 端口
+        break;
+        case 'mobile.chosan.cn':
+            httpsProxy.web(req, res, { target: 'http:// localhost:9001'});  // 9001 用作测试 app-mobile
+        break;
+        case 'chosan.cn':
+        case 'www.chosan.cn':
+            httpsProxy.web(req, res, { target: 'https://localhost:3000' });  // 3000 用作博客端口
+        default:
+            break;
+    }
+}).listen(443, () => {
+    console.log('443端口启动成功！')
+})
 
 proxyMap = new Map();
 proxyMap.set('ysd.kim', 'http://www.atool.org')
-proxyMap.set('mln.fun', 'http://www.atool.org')
-proxyMap.set('mlo.fun', 'http://www.25ks.com')
+proxyMap.set('mln.fun', 'http://www.diaoyu123.com')
+proxyMap.set('mlo.fun', 'http://www.lkong.net')
 proxyMap.set('mln.kim', 'http://www.a5ks.com')
 
 // 负责将 http 请求重定向到 https
@@ -76,7 +76,3 @@ http.createServer((req, res) => {
 }).listen(80, () => {
     console.log('重定向80端口启动成功！')
 });
-
-function changeHeader(req) {
-    r
-}
