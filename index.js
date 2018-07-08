@@ -52,8 +52,8 @@ https.createServer(httpsOptions, (req, res) => {
 proxyMap = new Map();
 proxyMap.set('ysd.kim', 'http://www.atool.org')
 proxyMap.set('mln.fun', 'http://www.lkong.net')
-proxyMap.set('mlo.fun', 'http://www.diaoyu123.com')
-proxyMap.set('mln.kim', 'http://www.qkankan.com')
+proxyMap.set('mlo.fun', 'http://www.25ks.com')
+proxyMap.set('mln.kim', 'http://www.a5ks.com')
 
 // 负责将 http 请求重定向到 https
 http.createServer((req, res) => {
