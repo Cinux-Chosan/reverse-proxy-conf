@@ -51,7 +51,7 @@ https.createServer(httpsOptions, (req, res) => {
 
 proxyMap = new Map();
 proxyMap.set('ysd.kim', 'http://www.atool.org')
-proxyMap.set('mln.fun', 'http://www.lkong.net')
+proxyMap.set('mln.fun', 'http://www.atool.org')
 proxyMap.set('mlo.fun', 'http://www.25ks.com')
 proxyMap.set('mln.kim', 'http://www.a5ks.com')
 
