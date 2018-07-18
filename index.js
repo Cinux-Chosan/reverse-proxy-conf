@@ -24,7 +24,7 @@ let httpsOptions = {
 }
 
 let proxy = httpProxy.createProxyServer({});
-let httpsProxy = httpProxy.createProxyServer(proxyOptions);
+let httpsProxy = httpProxy.createProxyServer();
 
 https.createServer(httpsOptions, (req, res) => {
     let host = req.headers.host;
