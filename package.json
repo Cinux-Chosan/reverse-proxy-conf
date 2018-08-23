@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Cinux-Chosan/reverse-proxy-conf#readme",
   "dependencies": {
-    "http-proxy": "^1.16.2"
+    "http-proxy": "^1.16.2",
+    "spdy": "^3.4.7"
   }
 }
