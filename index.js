@@ -40,7 +40,7 @@ spdy
         httpsProxy.web(req, res, { target: "http://localhost:9000" }); // 9000 用作 wxapi 端口
         break;
       case "mobile.chosan.cn":
-        httpsProxy.web(req, res, { target: "http:// localhost:9001" }); // 9001 用作测试 app-mobile
+        httpsProxy.web(req, res, { target: "http://localhost:9001" }); // 9001 用作测试 app-mobile
         break;
       case "chosan.cn":
       case "www.chosan.cn":
@@ -71,10 +71,7 @@ http
       let hostIndex = req.rawHeaders.findIndex(
         el => el.toLowerCase() === "host"
       );
-      req.headers.host = req.rawHeaders[hostIndex + 1] = target.replace(
-        /(http|https):\/\//,
-        ""
-      );
+      req.headers.host = req.rawHeaders[hostIndex + 1] = target.replace( /(http|https):\/\//, "" );
       console.log(`重定向到\t${target}`);
       proxy.web(req, res, { target });
     } else {
