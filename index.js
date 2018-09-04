@@ -8,8 +8,8 @@ let { URL } = require("url");
 
 let util = require("util");
 
-let cert = fs.readFileSync("/etc/letsencrypt/live/www.chosan.cn/fullchain.pem"),
-  key = fs.readFileSync("/etc/letsencrypt/live/www.chosan.cn/privkey.pem");
+let cert = fs.readFileSync("/etc/letsencrypt/live/chosan.cn/fullchain.pem"),
+  key = fs.readFileSync("/etc/letsencrypt/live/chosan.cn/privkey.pem");
 
 let proxyOptions = {
   ssl: {
