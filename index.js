@@ -44,7 +44,7 @@ spdy
         break;
       case "xtoken.ren":
       case "angel.xtoken.ren":
-        httpsProxy.web(req, res, { target: "https://localhost:60001" }); // 60001 用作 xtoken 端口
+        httpsProxy.web(req, res, { target: "http://localhost:60001" }); // 60001 用作 xtoken 端口
         break;
       case "chosan.cn":
       case "www.chosan.cn":
