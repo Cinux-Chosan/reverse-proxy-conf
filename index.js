@@ -42,9 +42,14 @@ spdy
       case "mobile.chosan.cn":
         httpsProxy.web(req, res, { target: "http://localhost:9001" }); // 9001 用作测试 app-mobile
         break;
+      case "xtoken.ren":
+      case "angel.xtoken.ren":
+        httpsProxy.web(req, res, { target: "https://localhost:60001" }); // 60001 用作 xtoken 端口
+        break;
       case "chosan.cn":
       case "www.chosan.cn":
         httpsProxy.web(req, res, { target: "https://localhost:3000" }); // 3000 用作博客端口
+        break;
       default:
         break;
     }
@@ -71,7 +76,7 @@ http
       let hostIndex = req.rawHeaders.findIndex(
         el => el.toLowerCase() === "host"
       );
-      req.headers.host = req.rawHeaders[hostIndex + 1] = target.replace( /(http|https):\/\//, "" );
+      req.headers.host = req.rawHeaders[hostIndex + 1] = target.replace(/(http|https):\/\//, "");
       console.log(`重定向到\t${target}`);
       proxy.web(req, res, { target });
     } else {
