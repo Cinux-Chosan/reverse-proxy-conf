@@ -3,6 +3,7 @@ const https = require("https");
 const httpProxy = require("http-proxy");
 const fs = require("fs");
 const spdy = require("spdy");
+const request = require('request');
 
 let { URL } = require("url");
 
@@ -84,7 +85,7 @@ http
     } else if (toUrl) {
       // 有 toUrl 参数则代表代理到 toUrl
         toUrl = decodeURIComponent(toUrl);
-        httpsProxy.web(req, res, { target: toUrl });
+        req.pipe(request(toUrl)).pipe(res);
     } else {
       let redirectUrl = new URL(url, `https://${host}`);
       req.headers.origin &&
