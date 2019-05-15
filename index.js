@@ -32,12 +32,6 @@ spdy
   .createServer(httpsOptions, (req, res) => {
     let host = req.headers.host;
     let url = req.url;
-    let toUrl = new URL(url).searchParams.get('toUrl');
-    // 有 toUrl 参数则代表代理到 toUrl
-    if (toUrl) {
-      toUrl = decodeURIComponent(toUrl);
-      return httpsProxy.web(req, res, { target: toUrl });
-    }
 
     console.log("https request\n", host, url);
 
@@ -76,6 +70,8 @@ http
     let host = req.headers.host;
     let url = req.url;
     console.log("http request\n", host, url);
+    let toUrl = new URL(url, `http://${host}`).searchParams.get('toUrl');
+
     let key = "";
     if ((key = [...proxyMap.keys()].find(el => host.includes(el)))) {
       let target = proxyMap.get(key);
@@ -85,6 +81,10 @@ http
       req.headers.host = req.rawHeaders[hostIndex + 1] = target.replace(/(http|https):\/\//, "");
       console.log(`重定向到\t${target}`);
       proxy.web(req, res, { target });
+    } else if (toUrl) {
+      // 有 toUrl 参数则代表代理到 toUrl
+        toUrl = decodeURIComponent(toUrl);
+        httpsProxy.web(req, res, { target: toUrl });
     } else {
       let redirectUrl = new URL(url, `https://${host}`);
       req.headers.origin &&
