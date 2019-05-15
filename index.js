@@ -70,7 +70,7 @@ http
   .createServer((req, res) => {
     let host = req.headers.host;
     let url = req.url;
-    console.log("http request\n", host, url);
+    console.log("http request\n", host, url, req.headers);
     let toUrl = new URL(url, `http://${host}`).searchParams.get('toUrl');
 
     let key = "";
@@ -85,6 +85,7 @@ http
     } else if (toUrl) {
       // 有 toUrl 参数则代表代理到 toUrl
         toUrl = decodeURIComponent(toUrl);
+        console.log('toUrl', toUrl);
         req.pipe(request(toUrl)).pipe(res);
     } else {
       let redirectUrl = new URL(url, `https://${host}`);
