@@ -35,24 +35,27 @@ spdy
     let url = req.url;
 
     console.log("https request\n", host, url);
-
-    switch (host) {
-      case "wx.chosan.cn":
-        httpsProxy.web(req, res, { target: "http://localhost:9000" }); // 9000 用作 wxapi 端口
-        break;
-      case "mobile.chosan.cn":
-        httpsProxy.web(req, res, { target: "http://localhost:9001" }); // 9001 用作测试 app-mobile
-        break;
-      case "xtoken.ren":
-      case "angel.xtoken.ren":
-        httpsProxy.web(req, res, { target: "http://localhost:60001" }); // 60001 用作 xtoken 端口
-        break;
-      case "chosan.cn":
-      case "www.chosan.cn":
-        httpsProxy.web(req, res, { target: "https://localhost:3000" }); // 3000 用作博客端口
-        break;
-      default:
-        break;
+    try {
+      switch (host) {
+        case "wx.chosan.cn":
+          httpsProxy.web(req, res, { target: "http://localhost:9000" }); // 9000 用作 wxapi 端口
+          break;
+        case "mobile.chosan.cn":
+          httpsProxy.web(req, res, { target: "http://localhost:9001" }); // 9001 用作测试 app-mobile
+          break;
+        case "xtoken.ren":
+        case "angel.xtoken.ren":
+          httpsProxy.web(req, res, { target: "http://localhost:60001" }); // 60001 用作 xtoken 端口
+          break;
+        case "chosan.cn":
+        case "www.chosan.cn":
+          httpsProxy.web(req, res, { target: "https://localhost:3000" }); // 3000 用作博客端口
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error(error)
     }
   })
   .listen(443, () => {
