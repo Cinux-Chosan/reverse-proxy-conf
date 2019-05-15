@@ -32,6 +32,12 @@ spdy
   .createServer(httpsOptions, (req, res) => {
     let host = req.headers.host;
     let url = req.url;
+    let toUrl = new URL(url).searchParams.get('toUrl');
+    // 有 toUrl 参数则代表代理到 toUrl
+    if (toUrl) {
+      toUrl = decodeURIComponent(toUrl);
+      return httpsProxy.web(req, res, { target: toUrl });
+    }
 
     console.log("https request\n", host, url);
 
