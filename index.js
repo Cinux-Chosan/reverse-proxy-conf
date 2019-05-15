@@ -86,7 +86,8 @@ http
       // 有 toUrl 参数则代表代理到 toUrl
         toUrl = decodeURIComponent(toUrl);
         console.log('toUrl', toUrl);
-        req.pipe(request(toUrl)).pipe(res);
+        // req.pipe(request(toUrl)).pipe(res);
+        proxy.web(req, res, { target: toUrl });
     } else {
       let redirectUrl = new URL(url, `https://${host}`);
       req.headers.origin &&
