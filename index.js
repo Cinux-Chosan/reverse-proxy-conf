@@ -75,6 +75,7 @@ http
 
     let key = "";
     if ((key = [...proxyMap.keys()].find(el => host.includes(el)))) {
+      console.log('代理到其他网站');
       let target = proxyMap.get(key);
       let hostIndex = req.rawHeaders.findIndex(
         el => el.toLowerCase() === "host"
@@ -84,10 +85,12 @@ http
       proxy.web(req, res, { target });
     } else if (toUrl) {
       // 有 toUrl 参数则代表代理到 toUrl
+        console.log('代理到 toUrl');
         toUrl = decodeURIComponent(toUrl);
         console.log('toUrl', toUrl);
         req.pipe(request(toUrl)).pipe(res);
     } else {
+      console.log('重定向到 https');
       let redirectUrl = new URL(url, `https://${host}`);
       req.headers.origin &&
         res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
