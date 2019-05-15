@@ -35,6 +35,15 @@ spdy
     let url = req.url;
 
     console.log("https request\n", host, url);
+
+    let toUrl = new URL(url, `https://${host}`).searchParams.get('toUrl');
+    if (toUrl) {
+      // 有 toUrl 参数则代表代理到 toUrl
+        console.log('代理到 toUrl');
+        toUrl = decodeURIComponent(toUrl);
+        console.log('toUrl', toUrl);
+        return req.pipe(request(toUrl)).pipe(res);
+    }
     try {
       switch (host) {
         case "wx.chosan.cn":
