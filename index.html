@@ -1,0 +1,233 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+      body {
+        font-size: 10px;
+        text-align: center;
+      }
+  
+      input {
+        width: 100px;
+        box-shadow: 0 0 2px #eee;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+  
+      #coin-from,
+      #coin-to {
+        width: 50px;
+      }
+  
+      button {
+        font-size: 20px;
+        margin-right: 20px;
+      }
+  
+      table {
+        margin-top: 20px;
+        font-size: 12px;
+      }
+  
+      tbody tr:first-child {
+        background: #ff0;
+        color: #f00;
+        font-size: 14px;
+        font-weight: bold;
+      }
+    </style>
+    <title>哈哈哈</title>
+  </head>
+  
+  <body>
+    <audio id="alarm" src="./wakeup.mp3" preload="" loop="loop" controls=""></audio>
+    <br>
+    <div>距离下一次发送请求还剩：<span id="count">请点击开始按钮</span></div>
+    <input type="text" id="coin-from" value="usdt">
+    -
+    <input type="text" id="coin-to" value="optc">
+    <br>
+    <input type="text" id="price" value="0.03" placeholder="设置价格，超过会自动告警">
+    <br>
+    <button id="begin" onclick="begin();">
+      开始
+    </button>
+    <button id="begin" onclick="location.reload();">
+      重置
+    </button>
+    <br>
+    <table id="table" border="1" align="center">
+      <thead>
+        <tr>
+          <th>交易方向 / 交易量 / 单价</th>
+          <th>交易时间</th>
+          <th>买1 / 挂单量</th>
+          <th>卖1 / 挂单量</th>
+          <th>更新时间</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"> </tbody>
+    </table>
+    <script>
+      var alarm = document.getElementById('alarm');
+      var countElem = document.getElementById('count');
+      var btn = document.getElementById('begin');
+      var table = document.getElementById('tbody');
+      var coinFrom = document.getElementById('coin-from');
+      var coinTo = document.getElementById('coin-to');
+      var priceInput = document.getElementById('price');
+      var DIR_MAP = {
+        "1": "卖出",
+        "2": "买入"
+      }
+      alert('记得点一下开始按钮哦，否则无法开启语言自动播放')
+      var intervalId = null;
+      var timeIntervalId = null;
+      // 解析 url query params，赋值给 query 变量
+      function begin() {
+        eval(('var query = ' + ('{' + window.location.search.substr(1) + '}').replace('&', ',').replace('=', ':')))
+        var count = 0;
+        var interval = query.inter || 60000;
+        if (intervalId) clearInterval(intervalId);
+        if (timeIntervalId) clearInterval(timeIntervalId);
+        alarm.pause();
+        timeIntervalId = setInterval(function () {
+          var nextTime = interval / 1000 - count++;
+          countElem.innerText = nextTime + ' 秒';
+          if (nextTime <= 1) count = 0;
+        }, 1000)
+  
+        function task() {
+          var tradesUrl = createUrl('https://api.bitforex.com/api/v1/market/trades?size=10&symbol=coin-' + coinFrom
+            .value +
+            '-' + coinTo.value);
+          var depthUrl = createUrl('https://api.bitforex.com/api/v1/market/depth?symbol=coin-' + coinFrom.value +
+            '-' + coinTo.value);
+  
+          var allReq = [tradesUrl, depthUrl]
+  
+          Promise.all(allReq.map(function (url) {
+              return req(url);
+            }))
+            .then(function (ret) {
+              console.log(ret)
+              var tradesInfo = ret[0];
+              var depthInfo = ret[1];
+              var li = document.createElement('tr');
+              var innerHtml = '';
+              if (tradesInfo.success) {
+                // var bids = tradesInfo.data.bids;
+                var latestExchange = tradesInfo.data[0];
+                var currentPrice = latestExchange.price; // bids[0].price;
+                innerHtml = '<td>' + DIR_MAP[latestExchange.direction] + ' / <br />' + latestExchange.amount +
+                  ' / <br />' +
+                  currentPrice + '</td><td>' + formatDate(new Date(latestExchange.time), true) + '</td>';
+                if (currentPrice > (priceInput.value || query.price || 0.02)) {
+                  console.log('超过')
+                  vibrate(10000);
+                  setInterval(function () {
+                    // 震动 10 秒
+                    vibrate(10000);
+                  }, 11000); // 每 11 秒震动 10 秒，间隔一秒
+                  if (!query.quiet) {
+                    alarm.play()
+                  }
+                } else {
+                  console.log('不够')
+                }
+              } else {
+                innerHtml = '<td></td><td></td>'
+              }
+              if (depthInfo.success) {
+                var buy_1 = depthInfo.data.bids[0];
+                var sell_1 = depthInfo.data.asks.sort(function (a, b) {
+                  return a.price - b.price;
+                })[0];
+                innerHtml += '<td>' + buy_1.price + ' / <br />' + buy_1.amount + '</td><td>' + sell_1.price +
+                  ' / <br/>' + sell_1.amount + '</td>';
+              } else {
+                innerHtml += '<td></td><td></td>'
+              }
+              innerHtml += '<td>' + formatDate() + '</td>';
+              li.innerHTML = innerHtml;
+              table.insertAdjacentElement('afterbegin', li)
+            }, function (error) {
+              console.log(error.message)
+            });
+        }
+  
+        task();
+        intervalId = setInterval(task, interval)
+      }
+  
+      function req(url) {
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+          //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+          xmlhttp = new XMLHttpRequest();
+        } else {
+          // IE6, IE5 浏览器执行代码
+          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+  
+        return new Promise(function (res, rej) {
+          xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+              try {
+                res(JSON.parse(xmlhttp.responseText))
+              } catch (error) {
+                console.log(error.message);
+                rej(error);
+              };
+            }
+          }
+          xmlhttp.open("GET", url, true);
+          xmlhttp.send();
+        });
+      }
+  
+      function createUrl(url) {
+        return 'http://localhost/?interval=20000&t=' + Date.now() + '&toUrl=' + encodeURIComponent(url);
+      }
+  
+      function padStart(str, len, fill) {
+        str = String(str);
+        len = len || 2;
+        fill = String(fill || 0);
+        if (str.length >= len) {
+          return str;
+        } else {
+          var strTmp = '';
+          for (var i = 0, length = len - str.length; i < length; i += fill.length) {
+            strTmp += (fill || '0');
+          }
+          return strTmp + str;
+        }
+      }
+  
+      function formatDate(date, isFull) {
+        date = date || new Date();
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        var d = date.getDate();
+        var h = date.getHours();
+        var mm = date.getMinutes();
+        var s = date.getSeconds();
+        var dateStr = y + '/' + padStart(m) + '/' + padStart(d);
+        var timeStr = padStart(h) + ':' + padStart(mm) + ':' + padStart(s);
+        return isFull ? dateStr + ' ' + timeStr : timeStr;
+      }
+  
+      function vibrate(args) {
+        navigator.vibrate = navigator.vibrate ||
+          navigator.webkitVibrate ||
+          navigator.mozVibrate ||
+          navigator.msVibrate;
+        navigator.vibrate(args)
+      }
+    </script>
+  
+  
+  
+  </body></html>
