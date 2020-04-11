@@ -31,8 +31,8 @@ if (process.argv[2] !== "dev") {
     key,
   };
 
-  // https
-  spdy
+  https
+  // spdy
     .createServer(httpsOptions, (req, res) => {
       const host = req.headers.host;
       // if (relay.isRelay(req)) {
