@@ -7,10 +7,21 @@ const { URL } = require("url");
 
 const domainMap = require("./domainMap");
 
-const relay = require("./lib/relay");
+// const relay = require("./lib/relay");
 
 const proxy = httpProxy.createProxyServer({});
 const httpsProxy = httpProxy.createProxyServer();
+
+const proxyErrorHandler = (err, req, res) => {
+  res.writeHead(500, {
+    "Content-Type": "text/plain",
+  });
+  res.end("Something went wrong. And we are reporting a custom error message.");
+};
+
+proxy.on("error", proxyErrorHandler);
+httpsProxy.on("error", proxyErrorHandler);
+
 if (process.argv[2] !== "dev") {
   const cert = fs.readFileSync("/etc/letsencrypt/live/chosan.cn/fullchain.pem"),
     key = fs.readFileSync("/etc/letsencrypt/live/chosan.cn/privkey.pem");
@@ -59,9 +70,9 @@ http
       req.headers.host = req.rawHeaders[hostIndex + 1] = target.replace(/(http|https):\/\//, "");
       console.log(`重定向到\t${target}`);
       proxy.web(req, res, { target });
-    } else if (relay.isRelay(req)) {
-      // 需要做请求代理
-      relay(req, res);
+    // } else if (relay.isRelay(req)) {
+    //   // 需要做请求代理
+    //   relay(req, res);
     } else {
       console.log("重定向到 https");
       const redirectUrl = new URL(url, `https://${host}`);
