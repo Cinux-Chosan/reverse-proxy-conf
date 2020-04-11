@@ -24,10 +24,11 @@ if (process.argv[2] !== "dev") {
   spdy
     .createServer(httpsOptions, (req, res) => {
       const host = req.headers.host;
-      if (relay.isRelay(req)) {
-        return relay(req, res);
-      }
+      // if (relay.isRelay(req)) {
+      //   return relay(req, res);
+      // }
       const port = domainMap[host];
+      console.log(host, port);
       if (port) {
         httpsProxy.web(req, res, {
           target: `http://localhost:${port}`,
